@@ -1,0 +1,4 @@
+# 不提交大文件（走 Release 分发）
+apks/**/*.apk
+apks/*.dex
+.DS_Store
