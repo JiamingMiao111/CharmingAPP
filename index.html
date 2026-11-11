@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="build" content="v2"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CharmingAPP — 各大厂商内置应用移植</title>
 <meta name="description" content="把小米、三星等厂商的内置应用移植到任何 Android 手机上。已做好兼容补丁，直接安装即可使用。">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0e17'/><text y='72' x='50' font-size='64' text-anchor='middle' fill='%2300e676' font-family='monospace' font-weight='bold'>C</text></svg>">
@@ -204,6 +204,13 @@ footer a{color:var(--cyan);text-decoration:none}
 
 <div class="wrap">
 
+  <!-- 改造记录入口 -->
+  <div style="display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap">
+    <a href="changes.html" style="display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:14px;border:1px solid rgba(0,230,118,.4);background:rgba(0,230,118,.08);color:var(--accent);text-decoration:none;font-size:14px;font-weight:700;transition:.2s">
+      📊 查看设备改造记录
+    </a>
+  </div>
+
   <div class="notice">
     <h4>⚡ 安装前须知</h4>
     <ul>
@@ -311,186 +318,114 @@ miui.cloud.sync.FamilyInfo</pre>
 </footer>
 
 <script>
-/* ══════════════ 数据 ══════════════ */
-const APPS = [
-  // ── HyperOS 小米 ──
-  {
-    id:'migallery', brand:'xiaomi', name:'小米相册', icon:'📷',
-    pkg:'com.miui.gallery', ver:'v15240103', size:'96 MB',
-    file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiGallery.apk',
-    status:'ok', label:'完美运行',
-    desc:'完整相册体验，支持照片/视频浏览、相册管理、AI 分类。<b>测试：681 张照片全部正常显示</b>',
-    fixes:['targetSdk','micloud','shim×9']
-  },
-  {
-    id:'minotes', brand:'xiaomi', name:'小米笔记', icon:'📝',
-    pkg:'com.miui.notes', ver:'2.3.0.7', size:'83 MB',
-    file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiNotes.apk',
-    status:'ok', label:'完美运行',
-    desc:'MIUI 笔记，支持富文本、待办事项、文件夹分类、搜索。<b>完整工具栏 + 新建按钮全部可用</b>',
-    fixes:['micloud','shim×9']
-  },
-  {
-    id:'miweather', brand:'xiaomi', name:'小米天气', icon:'🌤️',
-    pkg:'com.miui.weather2', ver:'G-17.0.3.15-HD', size:'25 MB',
-    file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiWeather.apk',
-    status:'ok', label:'完美运行',
-    desc:'MIUI 天气，带定位、城市管理、未来预报。<b>定位和城市搜索功能正常</b>',
-    fixes:['shim×9']
-  },
-  {
-    id:'micompass', brand:'xiaomi', name:'小米指南针', icon:'🧭',
-    pkg:'com.miui.compass', ver:'16.2.3.0', size:'4.3 MB',
-    file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiCompass.apk',
-    status:'ok', label:'可用',
-    desc:'轻量指南针，支持磁场校准、海拔高度。仅 4MB，无广告',
-    fixes:['shim×9']
-  },
-  {
-    id:'micalendar', brand:'xiaomi', name:'小米日历', icon:'📅',
-    pkg:'com.android.calendar', ver:'17.10.8.17', size:'16 MB',
-    file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiCalendar.apk',
-    status:'ok', label:'可用',
-    desc:'MIUI 日历，支持农历、节假日、日程提醒、多视图切换',
-    fixes:['targetSdk','shim×9']
-  },
-  {
-    id:'mimusic', brand:'xiaomi', name:'小米音乐', icon:'🎵',
-    pkg:'com.miui.player', ver:'4.36.2.1-R-pad', size:'146 MB',
-    file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiMusic.apk',
-    status:'ok', label:'可用',
-    desc:'本地音乐播放器，支持无损格式、均衡器、歌词滚动、睡眠定时',
-    fixes:['micloud','shim×9']
-  },
-  {
-    id:'midrop', brand:'xiaomi', name:'小米互传', icon:'📤',
-    pkg:'com.xiaomi.midrop', ver:'3.48.06', size:'28 MB',
-    file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiDrop.apk',
-    status:'ok', label:'可用',
-    desc:'小米互传（ShareMe），跨设备高速文件传输，无需网络、无需流量',
-    fixes:['targetSdk']
-  },
-
-  // ── One UI 三星 ──
-  {
-    id:'samhealth', brand:'samsung', name:'三星健康', icon:'💚',
-    pkg:'com.sec.android.app.shealth', ver:'7.1.3.001', size:'333 MB',
-    file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/SamsungHealth.apk',
-    status:'ok', label:'完美运行',
-    desc:'Samsung Health 完整功能：步数、心率、睡眠、运动记录。<b>已突破 Android 16 框架兼容壁垒</b>',
-    fixes:['targetSdk','META-INF'][0]
-  },
-  {
-    id:'saminternet', brand:'samsung', name:'三星浏览器', icon:'🌐',
-    pkg:'com.sec.android.app.sbrowser', ver:'31.0.0.79', size:'318 MB',
-    file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/SamsungInternet.apk',
-    status:'ok', label:'完美运行',
-    desc:'Samsung Internet，基于 Chromium 内核，支持广告拦截、深色模式、视频助手',
-    fixes:['targetSdk','META-INF']
-  },
-  {
-    id:'samcalendar', brand:'samsung', name:'三星日历', icon:'📅',
-    pkg:'com.samsung.android.calendar', ver:'13.0.07', size:'9 MB',
-    file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/SamsungCalendar.apk',
-    status:'ok', label:'完美运行',
-    desc:'Samsung Calendar，支持农历、节假日、多账户同步、日程视图。<b>攻克了 3 层三星框架依赖</b>',
-    fixes:['targetSdk','SemSystemProperties','SemCscFeature']
-  },
-  {
-    id:'samnotes', brand:'samsung', name:'三星笔记', icon:'📒',
-    pkg:'com.samsung.android.app.notes', ver:'4.9.06.8', size:'106 MB',
-    file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/SamsungNotes.apk',
-    status:'ok', label:'可用',
-    desc:'Samsung Notes，支持手写、PDF 标注、语音录音、多格式导出',
-    fixes:['META-INF']
-  }
+var APPS = [
+  {id:'migallery',brand:'xiaomi',name:'小米相册',icon:'📷',pkg:'com.miui.gallery',ver:'v15240103',size:'96 MB',file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiGallery.apk',label:'完美运行',desc:'完整相册体验，支持照片/视频浏览、相册管理、AI 分类。<b>测试：681 张照片全部正常显示</b>',fixes:['targetSdk','micloud','shim×9']},
+  {id:'minotes',brand:'xiaomi',name:'小米笔记',icon:'📝',pkg:'com.miui.notes',ver:'2.3.0.7',size:'83 MB',file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiNotes.apk',label:'完美运行',desc:'MIUI 笔记，支持富文本、待办事项、文件夹分类、搜索。<b>完整工具栏 + 新建按钮全部可用</b>',fixes:['micloud','shim×9']},
+  {id:'miweather',brand:'xiaomi',name:'小米天气',icon:'🌤️',pkg:'com.miui.weather2',ver:'G-17.0.3.15-HD',size:'25 MB',file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiWeather.apk',label:'完美运行',desc:'MIUI 天气，带定位、城市管理、未来预报。<b>定位和城市搜索功能正常</b>',fixes:['shim×9']},
+  {id:'micompass',brand:'xiaomi',name:'小米指南针',icon:'🧭',pkg:'com.miui.compass',ver:'16.2.3.0',size:'4.3 MB',file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiCompass.apk',label:'可用',desc:'轻量指南针，支持磁场校准、海拔高度。仅 4MB，无广告',fixes:['shim×9']},
+  {id:'micalendar',brand:'xiaomi',name:'小米日历',icon:'📅',pkg:'com.android.calendar',ver:'17.10.8.17',size:'16 MB',file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiCalendar.apk',label:'可用',desc:'MIUI 日历，支持农历、节假日、日程提醒、多视图切换',fixes:['targetSdk','shim×9']},
+  {id:'mimusic',brand:'xiaomi',name:'小米音乐',icon:'🎵',pkg:'com.miui.player',ver:'4.36.2.1-R-pad',size:'146 MB',file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiMusic.apk',label:'可用',desc:'本地音乐播放器，支持无损格式、均衡器、歌词滚动、睡眠定时',fixes:['micloud','shim×9']},
+  {id:'midrop',brand:'xiaomi',name:'小米互传',icon:'📤',pkg:'com.xiaomi.midrop',ver:'3.48.06',size:'28 MB',file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/MiDrop.apk',label:'可用',desc:'小米互传（ShareMe），跨设备高速文件传输，无需网络、无需流量',fixes:['targetSdk']},
+  {id:'samhealth',brand:'samsung',name:'三星健康',icon:'💚',pkg:'com.sec.android.app.shealth',ver:'7.1.3.001',size:'333 MB',file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/SamsungHealth.apk',label:'完美运行',desc:'Samsung Health 完整功能：步数、心率、睡眠、运动记录。<b>已突破 Android 16 框架兼容壁垒</b>',fixes:['targetSdk','META-INF']},
+  {id:'saminternet',brand:'samsung',name:'三星浏览器',icon:'🌐',pkg:'com.sec.android.app.sbrowser',ver:'31.0.0.79',size:'318 MB',file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/SamsungInternet.apk',label:'完美运行',desc:'Samsung Internet，基于 Chromium 内核，支持广告拦截、深色模式、视频助手',fixes:['targetSdk','META-INF']},
+  {id:'samcalendar',brand:'samsung',name:'三星日历',icon:'📅',pkg:'com.samsung.android.calendar',ver:'13.0.07',size:'9 MB',file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/SamsungCalendar.apk',label:'完美运行',desc:'Samsung Calendar，支持农历、节假日、多账户同步、日程视图。<b>攻克了 3 层三星框架依赖</b>',fixes:['targetSdk','SemSystemProperties','SemCscFeature']},
+  {id:'samnotes',brand:'samsung',name:'三星笔记',icon:'📒',pkg:'com.samsung.android.app.notes',ver:'4.9.06.8',size:'106 MB',file:'https://github.com/JiamingMiao111/CharmingAPP/releases/download/v1.0.0/SamsungNotes.apk',label:'可用',desc:'Samsung Notes，支持手写、PDF 标注、语音录音、多格式导出',fixes:['META-INF']}
 ];
 
-/* ══════════════ 状态 ══════════════ */
-let brandFilter = 'all';
-let query = '';
-const BRAND_META = {
+var BRAND_META = {
   xiaomi:  { name:'HyperOS · 小米', badge:'XIAOMI / MIUI' },
   samsung: { name:'One UI · 三星', badge:'SAMSUNG' }
 };
 
-/* ══════════════ 渲染 ══════════════ */
-const $list = document.getElementById('list');
-const $q = document.getElementById('q');
+var brandFilter = 'all';
+var query = '';
+
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
 function matches(a){
   if (brandFilter !== 'all' && a.brand !== brandFilter) return false;
   if (!query) return true;
-  const q = query.toLowerCase();
-  return a.name.toLowerCase().includes(q)
-      || a.pkg.toLowerCase().includes(q)
-      || a.desc.toLowerCase().includes(q);
+  return a.name.toLowerCase().indexOf(query) >= 0
+      || a.pkg.toLowerCase().indexOf(query) >= 0
+      || a.desc.toLowerCase().indexOf(query) >= 0;
+}
+
+function makeCard(a){
+  var chips = '';
+  for (var i = 0; i < a.fixes.length; i++){
+    chips += '<span class="chip">' + esc(a.fixes[i]) + '</span>';
+  }
+  var svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+  var h = '';
+  h += '<div class="card">';
+  h += '<div class="card-head">';
+  h += '<div class="app-icon">' + a.icon + '</div>';
+  h += '<div class="card-title"><h3>' + esc(a.name) + '</h3>';
+  h += '<div class="pkg">' + esc(a.pkg) + '</div></div></div>';
+  h += '<div class="meta">';
+  h += '<span class="chip ok">' + esc(a.label) + '</span>';
+  h += '<span class="chip">' + esc(a.ver) + '</span>';
+  h += '<span class="chip">' + esc(a.size) + '</span></div>';
+  h += '<p class="desc">' + a.desc + '</p>';
+  h += '<div class="meta" style="margin-bottom:14px">' + chips + '</div>';
+  h += '<a class="dl" href="' + a.file + '" download>' + svg + '下载 APK</a>';
+  h += '</div>';
+  return h;
 }
 
 function render(){
-  const items = APPS.filter(matches);
-  if (!items.length){
-    $list.innerHTML = '<div class="empty">没有匹配的应用</div>';
+  var list = document.getElementById('list');
+  var filtered = [];
+  var i, j;
+  for (i = 0; i < APPS.length; i++){
+    if (matches(APPS[i])) filtered.push(APPS[i]);
+  }
+  if (filtered.length === 0){
+    list.innerHTML = '<div class="empty">没有匹配的应用</div>';
     return;
   }
-  let html = '';
-  const brands = brandFilter === 'all' ? ['xiaomi','samsung'] : [brandFilter];
-  for (const b of brands){
-    const group = items.filter(a => a.brand === b);
-    if (!group.length) continue;
-    const m = BRAND_META[b];
-    html += `<div class="brand">
-      <h2>${m.name}</h2>
-      <span class="badge">${m.badge}</span>
-      <div class="brand-line"></div>
-    </div><div class="grid">`;
-    for (const a of group){
-      const chips = a.fixes.map(f => `<span class="chip">${f}</span>`).join('');
-      html += `<div class="card">
-        <div class="card-head">
-          <div class="app-icon">${a.icon}</div>
-          <div class="card-title">
-            <h3>${a.name}</h3>
-            <div class="pkg">${a.pkg}</div>
-          </div>
-        </div>
-        <div class="meta">
-          <span class="chip ok">${a.label}</span>
-          <span class="chip">${a.ver}</span>
-          <span class="chip">${a.size}</span>
-        </div>
-        <p class="desc">${a.desc}</p>
-        <div class="meta" style="margin-bottom:14px">${chips}</div>
-        <a class="dl" href="${a.file}" download>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          下载 APK
-        </a>
-      </div>`;
+  var order = (brandFilter === 'all') ? ['xiaomi','samsung'] : [brandFilter];
+  var html = '';
+  for (i = 0; i < order.length; i++){
+    var brand = order[i];
+    var group = [];
+    for (j = 0; j < filtered.length; j++){
+      if (filtered[j].brand === brand) group.push(filtered[j]);
+    }
+    if (group.length === 0) continue;
+    var meta = BRAND_META[brand];
+    html += '<div class="brand"><h2>' + esc(meta.name) + '</h2>';
+    html += '<span class="badge">' + esc(meta.badge) + '</span>';
+    html += '<div class="brand-line"></div></div>';
+    html += '<div class="grid">';
+    for (j = 0; j < group.length; j++){
+      html += makeCard(group[j]);
     }
     html += '</div>';
   }
-  $list.innerHTML = html;
+  list.innerHTML = html;
 }
 
-/* ══════════════ 交互 ══════════════ */
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
-    t.classList.add('on');
-    brandFilter = t.dataset.brand;
+var tabs = document.querySelectorAll('.tab');
+for (var t = 0; t < tabs.length; t++){
+  tabs[t].onclick = function(){
+    for (var x = 0; x < tabs.length; x++) tabs[x].classList.remove('on');
+    this.classList.add('on');
+    brandFilter = this.getAttribute('data-brand');
     render();
-  });
-});
+  };
+}
 
-$q.addEventListener('input', e => {
-  query = e.target.value.trim();
+document.getElementById('q').oninput = function(e){
+  query = e.target.value.trim().toLowerCase();
   render();
-});
+};
 
-document.getElementById('s-apps').textContent = APPS.length;
-document.getElementById('s-crash').textContent = 6;
-
+document.getElementById('statApps').textContent = APPS.length;
 render();
+
 </script>
 </body>
 </html>
